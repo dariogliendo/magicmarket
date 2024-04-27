@@ -1,5 +1,7 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import styled from "styled-components"
+import { UseAppDispatch } from "../store"
+import { getCards } from "../reducers/cardReducer"
 
 const SearchBarWrapper = styled.div`
   --color-searchbar-background: #444444;
@@ -53,6 +55,16 @@ const SearchBarWrapper = styled.div`
 const SearchBar = () => {
   const [searchText, setSearchText] = useState<string>("")
   const [showAdvanced, setShowAdvanced] = useState<boolean>(false)
+  const dispatch = UseAppDispatch()
+
+  useEffect(() => {
+    if (!searchText) return
+    const searchTimeout = setTimeout(() => {
+      dispatch(getCards({params: {search: searchText}}));
+    }, 300)
+
+    return () => clearTimeout(searchTimeout)
+  }, [searchText])
 
   const onSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault()

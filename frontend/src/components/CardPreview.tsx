@@ -80,7 +80,7 @@ const CardOverlay = ({ card, showOverlay, parentRef }: OverlayProps) => {
 
   return (
     <Portal container={() => document.querySelector('body')}>
-      <OverlayWrapper style={{...position}} ref={overlayRef}>
+      <OverlayWrapper style={{...position}} ref={overlayRef} key={card._id}>
         <div className="info-wrapper">
           <strong>{card.name}</strong>
           <p className="description">

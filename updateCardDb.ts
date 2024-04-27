@@ -8,7 +8,7 @@ mongoose.connect('mongodb://localhost:27017')
     try {
       console.log('Connected to MongoDB')
       await Card.deleteMany({})
-      const stream = fs.createReadStream('./.carddata/all-cards-20240214101438.json')
+      const stream = fs.createReadStream('.carddata/all-cards-20240424212057.json')
       await new Promise ((resolve, reject) => {
         stream.pipe(JSONStream.parse('*') as any)
         .on('data', (data: any) => {

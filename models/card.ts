@@ -60,7 +60,6 @@ const cardSchema = new mongoose.Schema<Card>({
   _id: String,
   name: {
     type: String,
-    index: true,
   },
   set: {
     name: String,
@@ -172,15 +171,8 @@ const cardSchema = new mongoose.Schema<Card>({
   }
 })
 
-cardSchema.index({
-  oracleText: 'text',
-  name: 'text'
-}, {
-  weights: {
-    oracleText: 1,
-    name: 2
-  }
-})
+cardSchema.index({ name: 'text', oracleText: 'text' });
+
 
 const model = mongoose.model('Card', cardSchema)
 

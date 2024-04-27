@@ -17,6 +17,11 @@ const CardListWrapper = styled.div`
 const CardList = () => {
   const cards = useAppSelector((state) => state.cardReducer.cards)
 
+  if (!cards?.length) return (
+    <div>
+      <p>No cards found</p>
+    </div>
+  )
 
   return (
     <CardListWrapper>

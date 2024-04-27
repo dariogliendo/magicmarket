@@ -14,6 +14,23 @@ cardsRouter.get('/', async (req: Request, res: Response) => {
 
   const filter : any = {}
 
+  if (req.query.search) {
+    const result = await Card.find({
+      lang: 'en',
+      $text: {$search: req.query.search as string} },
+      { score : { $meta: "textScore" } },
+    ).limit(Number(req.query.pageSize || 50)).skip(Number(req.query.page) * Number(req.query.pageSize)).sort({ score: { $meta: "textScore" } }).exec()
+    const responseObject = {
+      totalCards: await Card.countDocuments(filter),
+      pageSize: req.query.pageSize,
+      page: req.query.page,
+      totalPages: Math.ceil(await Card.countDocuments() / Number(req.query.pageSize)),
+      nextPage: req.protocol + '://' + req.get('host') + req.baseUrl + '?pageSize=' + req.body.pageSize + '&page=' + (Math.floor(req.body.page) + 1),
+      cards: result
+    }
+    return res.send(responseObject)
+  }
+
   if (req.query.name) filter['name'] = {$regex: req.query.name || '', $options: 'i'}
   if (req.query.colors) {
     if (req.query.colors.length === 1 && (req.query.colors as ColorName[])[0] === 'C') filter.colorIdentity = {$size: 0}
