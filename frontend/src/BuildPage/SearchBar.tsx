@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import styled from "styled-components"
 import { UseAppDispatch } from "../store"
-import { getCards } from "../reducers/cardReducer"
+import { searchCards } from "../reducers/cardReducer"
+import axios from "axios"
 
 const SearchBarWrapper = styled.div`
   --color-searchbar-background: #444444;
@@ -49,25 +50,40 @@ const SearchBarWrapper = styled.div`
       font-size: 1.5em;
     }
   }
-  
+`
+
+const Autocomplete = styled.div`
+  width: 100%;
+  position: relative;
+  min-height: 40px;
+  background-color: black;
+  top: 10px;
 `
 
 const SearchBar = () => {
   const [searchText, setSearchText] = useState<string>("")
   const [showAdvanced, setShowAdvanced] = useState<boolean>(false)
+  const [autocomplete, setAutocomplete] = useState<string>('')
   const dispatch = UseAppDispatch()
 
   useEffect(() => {
     if (!searchText) return
-    const searchTimeout = setTimeout(() => {
-      dispatch(getCards({params: {search: searchText}}));
+    const searchTimeout = setTimeout(async () => {
+      const { data } = await axios.get('https://api.scryfall.com/cards/autocomplete', {
+        params: {
+          q: searchText
+        }
+      })
+      if (!data.data?.length) return setAutocomplete('')
+      setAutocomplete(data.data[0]);
     }, 300)
 
     return () => clearTimeout(searchTimeout)
-  }, [searchText])
+  }, [searchText, dispatch])
 
   const onSearch = (e?: React.FormEvent) => {
-    if (e) e.preventDefault()
+    e?.preventDefault()
+    dispatch(searchCards({ params: { q: searchText } }))
     console.log(searchText)
   }
 
@@ -75,7 +91,7 @@ const SearchBar = () => {
     <>
       <SearchBarWrapper>
         <form action="" onSubmit={onSearch}>
-          <input type="text" placeholder="Search..." value={searchText} onChange={(e) => setSearchText(e.target.value)} />
+          <input type="text" placeholder="Search..." autoComplete={autocomplete} value={searchText} onChange={(e) => setSearchText(e.target.value)} />
         </form>
         <button className="iconButton settings" onClick={() => setShowAdvanced(!showAdvanced)}>
           <i className="fa-solid fa-sliders"></i>

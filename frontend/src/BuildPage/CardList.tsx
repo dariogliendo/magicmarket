@@ -25,8 +25,8 @@ const CardList = () => {
 
   return (
     <CardListWrapper>
-      {cards.map((card: Card) => (
-        <CardPreview card={card} key={card._id} />
+      {cards.map((card: any) => (
+        <CardPreview card={card} key={card.id} />
       ))}
     </CardListWrapper>
   )

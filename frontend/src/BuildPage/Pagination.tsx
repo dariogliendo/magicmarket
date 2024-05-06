@@ -18,7 +18,7 @@ const Pagination = () => {
   const dispatch = UseAppDispatch()
   const page = paramPage ? parseInt(paramPage) : 1
 
-  dispatch(getCards({ params: {page}}))
+  // dispatch(getCards({ params: {page}}))
 
   const setPage = (page: number) => {
     navigate('/' + page)

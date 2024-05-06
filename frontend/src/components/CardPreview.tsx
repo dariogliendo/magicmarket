@@ -6,7 +6,7 @@ import ManaCostIcon from './ManaCostIcon'
 import regexifyString from 'regexify-string'
 
 type Props = {
-  card: Card
+  card: any
 }
 
 type OverlayProps = Props & {
@@ -83,7 +83,7 @@ const CardOverlay = ({ card, showOverlay, parentRef }: OverlayProps) => {
       <OverlayWrapper style={{...position}} ref={overlayRef} key={card._id}>
         <div className="info-wrapper">
           <strong>{card.name}</strong>
-          <p className="description">
+          <p className="description" key={card._id}>
             {regexifyString({
               pattern: /{\w+}/g,
               decorator: (match) => {
@@ -92,7 +92,7 @@ const CardOverlay = ({ card, showOverlay, parentRef }: OverlayProps) => {
                   <span> </span>
                 </>
               },
-              input: card.oracleText
+              input: card.oracle_text
             })}
           </p>
         </div>
@@ -116,7 +116,7 @@ const CardPreview = ({ card }: Props) => {
     <>
       <CardWrapper onMouseEnter={() => setOverlayVisible(true)} onMouseLeave={() => setOverlayVisible(false)} ref={cardRef}>
         {
-          card.image?.png ? <img src={card.image?.png} alt={card.name} style={{ width: "100%" }} /> : ''
+          card.image_uris?.png ? <img src={card.image_uris.png} alt={card.name} style={{ width: "100%" }} /> : ''
         }
         <div className="text-line">
           <span>{card.name}</span>

@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import './App.css'
 import BuildPage from './BuildPage/BuildPage'
 import Navigation from './components/Navigation'
@@ -7,9 +6,6 @@ import {
   RouterProvider
 } from "react-router-dom"
 import styled from 'styled-components'
-import { UseAppDispatch } from './store'
-import { initializeCards } from './reducers/cardReducer'
-
 
 const MainWrapper = styled.div`
   max-width: 1440px;
@@ -21,6 +17,10 @@ const MainWrapper = styled.div`
 
 const router = createBrowserRouter([
   {
+    path: "/",
+    element: <BuildPage />
+  },
+  {
     path: "/:page",
     element: <BuildPage />
   },
@@ -31,11 +31,6 @@ const router = createBrowserRouter([
 ])
 
 function App() {
-  const dispatch = UseAppDispatch()
-
-  useEffect(() => {
-    dispatch(initializeCards())
-  })
 
   return (
     <>
