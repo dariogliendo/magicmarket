@@ -1,7 +1,6 @@
 import { useAppSelector } from "../store"
 import styled from "styled-components"
 import CardPreview from '../components/CardPreview'
-import { type Card } from "../../../models/card"
 
 const CardListWrapper = styled.div`
   display: grid;
@@ -15,7 +14,16 @@ const CardListWrapper = styled.div`
 `
 
 const CardList = () => {
-  const cards = useAppSelector((state) => state.cardReducer.cards)
+  const {cards, status} = useAppSelector((state) => ({
+    cards: state.cardReducer.cards,
+    status: state.cardReducer.status,
+  }))
+
+  if (status === 'loading') return (
+    <div>
+      <span>Loading...</span>
+    </div>
+  )
 
   if (!cards?.length) return (
     <div>
@@ -25,7 +33,7 @@ const CardList = () => {
 
   return (
     <CardListWrapper>
-      {cards.map((card: any) => (
+      {cards.map((card) => (
         <CardPreview card={card} key={card.id} />
       ))}
     </CardListWrapper>

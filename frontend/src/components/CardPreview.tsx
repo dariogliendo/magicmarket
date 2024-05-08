@@ -1,23 +1,10 @@
-import { useEffect, useRef, useState, type RefObject } from 'react'
-import { Portal } from 'react-overlays'
+import { useRef, useState } from 'react'
 import styled from 'styled-components'
-import { type Card } from '../../../models/card'
-import ManaCostIcon from './ManaCostIcon'
-import regexifyString from 'regexify-string'
+import CardOverlay from './CardOverlay'
+import type { IScryfallCard } from 'scryfall-types-alt'
 
 type Props = {
-  card: any
-}
-
-type OverlayProps = Props & {
-  showOverlay: boolean,
-  parentRef: RefObject<HTMLElement>
-}
-
-type Position = {
-  top: number,
-  left: number,
-  height: number
+  card: IScryfallCard
 }
 
 const CardWrapper = styled.div`
@@ -34,73 +21,6 @@ const CardWrapper = styled.div`
   }
 `
 
-const OverlayWrapper = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-color: #000000;
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 5px;
-  width: 30vw;
-`
-
-const CardOverlay = ({ card, showOverlay, parentRef }: OverlayProps) => {
-  const overlayRef = useRef<HTMLDivElement>(null)
-  const [position, setPosition] = useState<Position>({
-    top: 0,
-    left: 0,
-    height: 0,
-  })
-
-  useEffect(() => {
-    if (!parentRef || !overlayRef) return
-    const parentRect = parentRef.current?.getBoundingClientRect()
-    const overlayRect = overlayRef.current?.getBoundingClientRect()
-
-    if (!parentRect || !overlayRect) return
-    const top = window.scrollY + parentRect.top;
-    let left = parentRect.left + parentRect.width + 12;
-
-    if ((left + overlayRect.width) > window.innerWidth) {
-      left = parentRect.left - overlayRect.width - 12
-    }
-
-    setPosition({
-      top,
-      left,
-      height: parentRect.height
-    })
-
-  }, [parentRef, showOverlay])
-
-  if (!showOverlay) return null;
-
-  return (
-    <Portal container={() => document.querySelector('body')}>
-      <OverlayWrapper style={{...position}} ref={overlayRef} key={card._id}>
-        <div className="info-wrapper">
-          <strong>{card.name}</strong>
-          <p className="description" key={card._id}>
-            {regexifyString({
-              pattern: /{\w+}/g,
-              decorator: (match) => {
-                return <>
-                  <ManaCostIcon costSymbol={match}></ManaCostIcon>
-                  <span> </span>
-                </>
-              },
-              input: card.oracle_text
-            })}
-          </p>
-        </div>
-      </OverlayWrapper>
-    </Portal>
-  )
-}
-
 const CardPreview = ({ card }: Props) => {
   const [overlayVisible, setOverlayVisible] = useState(false)
   const cardRef = useRef(null)
@@ -115,15 +35,13 @@ const CardPreview = ({ card }: Props) => {
   return (
     <>
       <CardWrapper onMouseEnter={() => setOverlayVisible(true)} onMouseLeave={() => setOverlayVisible(false)} ref={cardRef}>
-        {
-          card.image_uris?.png ? <img src={card.image_uris.png} alt={card.name} style={{ width: "100%" }} /> : ''
-        }
+        <img src={card.image_uris?.normal} alt={card.name} />
         <div className="text-line">
           <span>{card.name}</span>
           <span>{getCardPrice()}</span>
         </div>
       </CardWrapper>
-      <CardOverlay card={card} showOverlay={overlayVisible} parentRef={cardRef} key={card._id}/>
+      <CardOverlay card={card} showOverlay={overlayVisible} parentRef={cardRef} key={card.id} />
     </>
   )
 }
